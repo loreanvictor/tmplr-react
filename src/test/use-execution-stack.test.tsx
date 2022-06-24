@@ -1,7 +1,7 @@
 import React from 'react'
 import '@testing-library/jest-dom'
 import { render } from '@testing-library/react'
-import { Execution, Deferred } from '@tmplr/core'
+import { Execution, Deferred, Stack } from '@tmplr/core'
 
 import { useExecutionStack } from '../use-execution-stack'
 
@@ -35,12 +35,12 @@ describe(useExecutionStack, () => {
 
     const child = new ExB(g2)
     const execution = new ExA(g1, child, g3)
-    const res: any[] = []
+    const res: (Stack | undefined)[] = []
     const Comp = () => {
       const stack = useExecutionStack(execution)
       res.push(stack)
 
-      return <>{stack?.length}</>
+      return <span>{stack?.stack.length}</span>
     }
 
     render(<Comp/>)
@@ -53,16 +53,18 @@ describe(useExecutionStack, () => {
         g2.resolve()
         await wait(10)
         g3.resolve()
+        await wait(10)
       })()
     ])
 
     expect(res[0]).toBe(undefined)
-    expect(res[1][0]).toBe(execution)
-    expect(res[1].length).toBe(1)
-    expect(res[2][0]).toBe(execution)
-    expect(res[2][1]).toBe(child)
-    expect(res[2].length).toBe(2)
-    expect(res[3][0]).toBe(execution)
-    expect(res[3].length).toBe(1)
+    expect(res[1]!.peek()).toBe(execution)
+    expect(res[1]!.stack.length).toBe(1)
+    expect(res[2]!.parent()).toBe(execution)
+    expect(res[2]!.peek()).toBe(child)
+    expect(res[2]!.stack.length).toBe(2)
+    expect(res[3]!.peek()).toBe(execution)
+    expect(res[3]!.stack.length).toBe(1)
+    expect(res[4]).toBe(undefined)
   })
 })
