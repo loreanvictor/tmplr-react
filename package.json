@@ -1,6 +1,6 @@
 {
   "name": "@tmplr/react",
-  "version": "0.1.1",
+  "version": "0.1.2",
   "description": "React bindings for tmplr",
   "main": "dist/commonjs/index.js",
   "module": "dist/es/index.js",
@@ -29,7 +29,7 @@
   },
   "homepage": "https://github.com/loreanvictor/tmplr-react#readme",
   "dependencies": {
-    "@tmplr/core": "^0.2.3",
+    "@tmplr/core": "^0.5.1",
     "react": "^18.2.0",
     "react-use": "^17.4.0",
     "streamlets": "^0.5.0"
