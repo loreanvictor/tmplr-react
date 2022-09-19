@@ -7,7 +7,7 @@ import { useExecutionStack } from './use-execution-stack'
 
 export interface ComponentSet {
   Logger: React.ComponentType<{changeLog: ChangeLog}>
-  Error: React.ComponentType<{message: string, trace?: Stack}>
+  Error: React.ComponentType<{message: string, trace?: Stack, error?: Error}>
   Waiting: React.ComponentType<{execution?: Execution<unknown>}>
   route: (execution?: Execution<unknown>) => React.ComponentType<{}> | undefined
 }
@@ -25,7 +25,7 @@ export function ExecutionInterface({ execution, components, changeLog }: Executi
   const { loading, error } = useAsync(() => execution.execute())
 
   if (error) {
-    return <components.Error message={error.message} trace={stack} />
+    return <components.Error message={error.message} trace={stack} error={error} />
   }
 
   const Component = components.route(stack?.peek())
