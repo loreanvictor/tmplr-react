@@ -1,7 +1,7 @@
 import React from 'react'
 import '@testing-library/jest-dom'
 import { render } from '@testing-library/react'
-import { Execution, Deferred, Stack } from '@tmplr/core'
+import { Execution, Deferred, Stack, Flow } from '@tmplr/core'
 
 import { useExecutionStack } from '../use-execution-stack'
 
@@ -13,7 +13,8 @@ class ExA extends Execution<void> {
     readonly pre: Deferred<void>,
     readonly child: Execution<void>,
     readonly post: Deferred<void>,
-  ) { super() }
+    flow: Flow,
+  ) { super(flow) }
   async run() {
     await this.pre.promise
     await this.delegate(this.child)
@@ -22,7 +23,7 @@ class ExA extends Execution<void> {
 }
 
 class ExB extends Execution<void> {
-  constructor(readonly gate: Deferred<void>) { super() }
+  constructor(readonly gate: Deferred<void>, flow: Flow) { super(flow) }
   async run() { await this.gate.promise }
 }
 
@@ -33,8 +34,9 @@ describe(useExecutionStack, () => {
     const g2 = new Deferred<void>()
     const g3 = new Deferred<void>()
 
-    const child = new ExB(g2)
-    const execution = new ExA(g1, child, g3)
+    const flow = new Flow()
+    const child = new ExB(g2, flow)
+    const execution = new ExA(g1, child, g3, flow)
     const res: (Stack | undefined)[] = []
     const Comp = () => {
       const stack = useExecutionStack(execution)

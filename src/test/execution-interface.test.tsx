@@ -1,7 +1,7 @@
 import React from 'react'
 import '@testing-library/jest-dom'
 import { render, screen, act } from '@testing-library/react'
-import { Execution, Deferred, ChangeLog } from '@tmplr/core'
+import { Execution, Deferred, ChangeLog, Flow } from '@tmplr/core'
 
 import { ExecutionInterface } from '../execution-interface'
 
@@ -11,7 +11,8 @@ class ExA extends Execution<void> {
     readonly pre: Deferred<void>,
     readonly child: Execution<void>,
     readonly post: Deferred<void>,
-  ) { super() }
+    flow: Flow,
+  ) { super(flow) }
   async run() {
     await this.pre.promise
     await this.delegate(this.child)
@@ -20,7 +21,7 @@ class ExA extends Execution<void> {
 }
 
 class ExB extends Execution<void> {
-  constructor(readonly gate: Deferred<void>) { super() }
+  constructor(readonly gate: Deferred<void>, flow: Flow) { super(flow) }
   async run() { await this.gate.promise }
 }
 
@@ -34,8 +35,9 @@ describe(ExecutionInterface, () => {
     const g2 = new Deferred<void>()
     const g3 = new Deferred<void>()
 
-    const child = new ExB(g2)
-    const execution = new ExA(g1, child, g3)
+    const flow = new Flow()
+    const child = new ExB(g2, flow)
+    const execution = new ExA(g1, child, g3, flow)
 
     render(<ExecutionInterface
       execution={execution}
@@ -62,8 +64,9 @@ describe(ExecutionInterface, () => {
     const g1 = new Deferred<void>()
     const g2 = new Deferred<void>()
 
-    const child = new ExE()
-    const execution = new ExA(g1, child, g2)
+    const flow = new Flow()
+    const child = new ExE(flow)
+    const execution = new ExA(g1, child, g2, flow)
 
     render(<ExecutionInterface
       execution={execution}
