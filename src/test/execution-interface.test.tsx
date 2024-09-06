@@ -35,7 +35,7 @@ describe(ExecutionInterface, () => {
     const g2 = new Deferred<void>()
     const g3 = new Deferred<void>()
 
-    const flow = new Flow()
+    const flow = new Flow({ onKill: jest.fn() })
     const child = new ExB(g2, flow)
     const execution = new ExA(g1, child, g3, flow)
 
@@ -64,7 +64,7 @@ describe(ExecutionInterface, () => {
     const g1 = new Deferred<void>()
     const g2 = new Deferred<void>()
 
-    const flow = new Flow()
+    const flow = new Flow({ onKill: jest.fn() })
     const child = new ExE(flow)
     const execution = new ExA(g1, child, g2, flow)
 

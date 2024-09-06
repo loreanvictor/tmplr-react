@@ -34,7 +34,7 @@ describe(useExecutionStack, () => {
     const g2 = new Deferred<void>()
     const g3 = new Deferred<void>()
 
-    const flow = new Flow()
+    const flow = new Flow({ onKill: jest.fn() })
     const child = new ExB(g2, flow)
     const execution = new ExA(g1, child, g3, flow)
     const res: (Stack | undefined)[] = []
